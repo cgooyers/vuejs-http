@@ -71,63 +71,52 @@
             };
         },
         created() {
-            let customActions = {
-                softDelete: {
-                    method: 'DELETE',
-                    url: 'products/{productId}/reviews/{reviewId}?soft=true'
-                }
-            };
+            let url = 'http://localhost:300/product/{productId}/reviews/{reviewId}';
+            this.reviewResource = this.$resource(url);
 
-            let url = 'products/{productId}/reviews/{reviewId}';
-            this.reviewResource = this.$resource(url, {}, customActions);
-
-            this.getProduct(this.productId)
-                .then(product => this.product = product);
+           this.getProduct(this.productId)
+                .then(product => this.product = product); 
         },
         beforeRouteUpdate(to, from, next) {
-            this.getProduct(to.params.productId)
-                .then(product => this.product = product);
+            this.getProduct(this.params.productId)
+                .then(product => this.product = product); 
 
-            next();
+                next();
         },
         methods: {
             getProduct(productId) {
-                return this.$http.get('products/{productId}', {
+                return this.$http.get('http://localhost3000/products/{productId}', {
                     params: {
                         productId: productId
                     }
                 }).then(
                     response => response.json(),
-                    response => alert("Could not retrieve product!")
+                    response => alert('couldnt get product')
                 );
             },
             goBack() {
                 this.$router.history.go(-1);
             },
-            addNewReview(review) {
-                this.$http.post('products/{productId}/reviews', review, {
+            addNewReview() {
+                this.$http.post('http://localhost:3000/products/{productIdct}/reviews', review, {
                     params: {
                         productId: this.product.id
                     }
-                }).then(
-                    response => response.json(),
-                    response => alert("Could not add review!")
-                ).then(newReview => this.product.reviews.push(newReview));
+                });
             },
-            deleteReview(review) {
-                //this.reviewResource.delete({
-                this.reviewResource.softDelete({
+            deleteReview() {
+                this.reviewResource.delete({
                     productId: this.product.id,
                     reviewId: review.id
                 }).then(
                     response => {
-                        // Just be lazy and fetch product again
                         this.getProduct(this.product.id)
-                            .then(product => this.product = product);
+                            .then(product => this.product = product); 
                     },
-                    response => alert("Could not delete review!")
+                    response => alert('no-no delete your review')
                 );
             }
+        
         }
     }
 </script>
